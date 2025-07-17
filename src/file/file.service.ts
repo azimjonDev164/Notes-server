@@ -26,7 +26,7 @@ export class FileService {
   async findAll(folderId: number) {
     return this.prisma.file.findMany({
       where: { folderId },
-    }); 
+    });
   }
 
   async findOne(id: number) {
@@ -65,6 +65,11 @@ export class FileService {
       throw new NotFoundException('File not found');
     }
 
+    await this.prisma.note.deleteMany({
+      where: {
+        fileId: id,
+      },
+    });
     await this.prisma.file.delete({ where: { id } }); // ✅ fixed
 
     return `File #${id} has been removed`;

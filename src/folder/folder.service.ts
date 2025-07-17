@@ -94,6 +94,19 @@ export class FolderService {
       throw new Error('Folder not found or unauthorized');
     }
 
+    const fileWithNotes = await this.prisma.file.findFirst({
+      where: {
+        folderId: id,
+        Notes: {
+          some: {}, // checks if any notes exist
+        },
+      },
+    });
+
+    if (fileWithNotes) {
+      throw new Error('Cannot delete folder: one or more files have notes.');
+    }
+
     await this.prisma.file.deleteMany({
       where: {
         folderId: id,
